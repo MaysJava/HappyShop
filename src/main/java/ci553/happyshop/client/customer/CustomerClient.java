@@ -42,3 +42,5 @@ public class CustomerClient extends Application {
         //cusModel.removeProductNotifier = removeProductNotifier;
     }
 }
+
+// Test comment by Mays
