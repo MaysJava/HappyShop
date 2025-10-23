@@ -130,6 +130,11 @@ public class CustomerView  {
         taTrolley = new TextArea();
         taTrolley.setEditable(false);
         taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
+        // NEW: align columns nicely
+        taTrolley.setStyle("-fx-font-family: 'monospaced'; -fx-font-size: 12;");
+        taTrolley.setWrapText(false);
+
+
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
