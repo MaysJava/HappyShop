@@ -18,10 +18,27 @@ package ci553.happyshop.utility;
  *  - No instance needed: Since this holds only static constants, using a record clearly
  *    communicates that no state or behavior is expected.
  *  - Final and immutable by default: Records cannot be extended and implicitly prevent misuse.
- *  - Cleaner syntax: Avoids unnecessary boilerplate (constructors, getters, etc.).
- */
+ *  - Cleaner syntax: Avoids unnecessary boilerplate (constructors, getters, etc.).(((Previous deleted))))
+ *
+ * * Design rationale:
+ *  * - Declared as a final class: prevents inheritance and misuse
+ *  * - Private constructor: prevents instantiation (this is a static-only utility class)
+ *  * - Holds only static constants: ensures minimal memory usage and clean syntax
+ *  *
+ *  * Why a Record is NOT appropriate:
+ *  * - Records are intended for immutable instance data (e.g., DTOs), not static constants
+ *  * - This class has no record components — everything is static
+ *  * - We're using this as a utility container, not a data model
+ *  *
+ *  * Reminder:
+ *  * Just because a class has no behaviour and only data does NOT mean it should be a record.
+ *  * If all members are static constants, use a final utility class like this one.
+ *  */
 
-public record UIStyle() {
+public final class UIStyle {
+    private UIStyle() {
+        throw new UnsupportedOperationException("UIStyle is a utility class");
+    }
 
     public static final int customerWinWidth = 600;
     public static final int customerWinHeight = 300;

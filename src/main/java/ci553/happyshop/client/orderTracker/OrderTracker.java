@@ -14,21 +14,35 @@ import javafx.stage.Stage;
 import java.util.Map;
 import java.util.TreeMap;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 /**
  * OrderTracker class is for tracking orders and their states.
  * It displays an ordersMap(a list of orders with their associated states) in a TextArea.
  * The ordersMap data is received from the OrderHub.
  */
 
-public class OrderTracker {
+public class OrderTracker implements PropertyChangeListener {
     private final int WIDTH = UIStyle.trackerWinWidth;
     private final int HEIGHT = UIStyle.trackerWinHeight;
 
     // TreeMap (orderID,state) holding order IDs and their corresponding states.
-    private static final TreeMap<Integer, OrderState> ordersMap = new TreeMap<>();
+    private final TreeMap<Integer, OrderState> ordersMap = new TreeMap<>();
     private final TextArea taDisplay; //area to show all orderId and their state on the GUI
 
-     //Constructor initializes the UI, a title Label, and a TextArea for displaying the order details.
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (!"orderMap".equals(evt.getPropertyName())) return;
+
+        @SuppressWarnings("unchecked")
+        TreeMap<Integer, OrderState> updatedMap = (TreeMap<Integer, OrderState>) evt.getNewValue();
+
+        javafx.application.Platform.runLater(() -> setOrderMap(updatedMap));
+    }
+
+
+    //Constructor initializes the UI, a title Label, and a TextArea for displaying the order details.
     public OrderTracker() {
         Label laTitle = new Label("Order_ID,  State");
         laTitle.setStyle(UIStyle.labelTitleStyle);
@@ -39,7 +53,7 @@ public class OrderTracker {
 
         VBox vbox = new VBox(10,laTitle, taDisplay);
         vbox.setAlignment(Pos.TOP_CENTER);
-        vbox.setStyle(UIStyle. rootStyleGray);
+        vbox.setStyle(UIStyle.rootStyleGray);
 
         Scene scene = new Scene(vbox, WIDTH, HEIGHT);
         Stage window = new Stage();
@@ -57,7 +71,7 @@ public class OrderTracker {
      */
     public void registerWithOrderHub(){
         OrderHub orderHub = OrderHub.getOrderHub();
-        orderHub.registerOrderTracker(this);
+        orderHub.addPropertyChangeListener(this);
     }
 
     /**

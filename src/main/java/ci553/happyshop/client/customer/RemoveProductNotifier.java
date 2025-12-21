@@ -34,6 +34,7 @@ import javafx.stage.Stage;
 public class RemoveProductNotifier {
     public CustomerView cusView; //tracking the window of cusView
 
+
     private static int WIDTH = UIStyle.removeProNotifierWinWidth;
     private static int HEIGHT = UIStyle.removeProNotifierWinHeight;
 

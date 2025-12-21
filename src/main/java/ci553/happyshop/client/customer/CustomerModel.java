@@ -6,6 +6,9 @@ import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.orderManagement.OrderHub;
 import ci553.happyshop.utility.StorageLocation;
 import ci553.happyshop.utility.ProductListFormatter;
+import ci553.happyshop.catalogue.UnderMinimumPaymentException;
+import ci553.happyshop.catalogue.ExcessiveOrderQuantityException;
+
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -27,6 +30,7 @@ public class CustomerModel {
 
     private Product theProduct = null; // product found from search
     private ArrayList<Product> trolley = new ArrayList<>(); // a list of products in trolley
+    private RemoveProductNotifier removeNotifier;
 
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                        // Image to show in product preview (Search Page)
@@ -77,43 +81,66 @@ public class CustomerModel {
     }
 
     void checkOut() throws IOException, SQLException {
-        if (!trolley.isEmpty()) {
-            // If trolley already holds merged items, grouping is cheap; otherwise it merges by id for DB check.
-            ArrayList<Product> groupedTrolley = groupProductsById(trolley);
-            ArrayList<Product> insufficientProducts = databaseRW.purchaseStocks(groupedTrolley);
-
-            if (insufficientProducts.isEmpty()) { // stock is sufficient for all products
-                OrderHub orderHub = OrderHub.getOrderHub();
-                Order theOrder = orderHub.newOrder(trolley);
-                trolley.clear();
-                displayTaTrolley = "";
-                displayTaReceipt = String.format(
-                        "Order_ID: %s\nOrdered_Date_Time: %s\n%s",
-                        theOrder.getOrderId(),
-                        theOrder.getOrderedDateTime(),
-                        ProductListFormatter.buildString(theOrder.getProductList())
-                );
-                System.out.println(displayTaReceipt);
-            } else { // Some products have insufficient stock — build an error message
-                StringBuilder errorMsg = new StringBuilder();
-                for (Product p : insufficientProducts) {
-                    errorMsg.append("\u2022 ").append(p.getProductId()).append(", ")
-                            .append(p.getProductDescription()).append(" (Only ")
-                            .append(p.getStockQuantity()).append(" available, ")
-                            .append(p.getOrderedQuantity()).append(" requested)\n");
-                }
-                theProduct = null;
-
-                // TODO (later): remove insufficient items from trolley and show a notifier window.
-                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg;
-                System.out.println("stock is not enough");
-            }
-        } else {
+        if (trolley.isEmpty()) {
             displayTaTrolley = "Your trolley is empty";
             System.out.println("Your trolley is empty");
+            updateView();
+            return;
         }
+
+        // 🧪 First: validate payment and quantities using our new business rules
+        try {
+            validateTrolley(trolley);
+        } catch (UnderMinimumPaymentException | ExcessiveOrderQuantityException e) {
+            // Handle our own business rule failures here
+
+            // For now we keep it simple: show the message in the UI and console
+            displayLaSearchResult = e.getMessage();
+            System.out.println(e.getMessage());
+
+            // We don't proceed with checkout if validation fails
+            displayTaReceipt = "";
+            updateView();
+            return;
+        }
+
+        // 👉 If we reach here, the trolley passed the new business rules.
+        // Existing stock-check and order-creation logic stays the same:
+
+        // Group the products in the trolley by productId to optimise stock checking
+        ArrayList<Product> groupedTrolley = groupProductsById(trolley);
+        ArrayList<Product> insufficientProducts = databaseRW.purchaseStocks(groupedTrolley);
+
+        if (insufficientProducts.isEmpty()) { // stock is sufficient for all products
+            OrderHub orderHub = OrderHub.getOrderHub();
+            Order theOrder = orderHub.newOrder(trolley);
+            trolley.clear();
+            displayTaTrolley = "";
+            displayTaReceipt = String.format(
+                    "Order_ID: %s\nOrdered_Date_Time: %s\n%s",
+                    theOrder.getOrderId(),
+                    theOrder.getOrderedDateTime(),
+                    ProductListFormatter.buildString(theOrder.getProductList())
+            );
+            System.out.println(displayTaReceipt);
+        } else {
+            // Your existing "stock not enough" code here (we already wrote it earlier)
+            StringBuilder errorMsg = new StringBuilder();
+            for (Product p : insufficientProducts) {
+                errorMsg.append("\u2022 ").append(p.getProductId()).append(", ")
+                        .append(p.getProductDescription()).append(" (Only ")
+                        .append(p.getStockQuantity()).append(" available, ")
+                        .append(p.getOrderedQuantity()).append(" requested)\n");
+            }
+            theProduct = null;
+
+            displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg;
+            System.out.println("stock is not enough");
+        }
+
         updateView();
     }
+
 
     /**
      * Groups products by their productId to optimize database queries and updates.
@@ -199,8 +226,70 @@ public class CustomerModel {
         trolley.add(copy);
     }
 
-    /** Sort the trolley by productId (IDs like "0003" sort correctly lexicographically). */
+    /**
+     * Sort the trolley by productId (IDs like "0003" sort correctly lexicographically).
+     */
     private void sortTrolleyById() {
         trolley.sort(Comparator.comparing(Product::getProductId));
     }
+
+    // To remove from trolley any product whose id appears in the insufficient list
+    private void removeInsufficientFromTrolley(ArrayList<Product> insufficient) {
+        java.util.HashSet<String> badIds = new java.util.HashSet<>();
+        for (Product p : insufficient) badIds.add(p.getProductId());
+        trolley.removeIf(p -> badIds.contains(p.getProductId()));
+    }
+
+    // To build a friendly message for the user
+    private String buildInsufficientMessage(ArrayList<Product> insufficient) {
+        StringBuilder sb = new StringBuilder("Checkout failed. Not enough stock for:\n");
+        for (Product p : insufficient) {
+            sb.append("• ")
+                    .append(p.getProductId()).append(" – ").append(p.getProductDescription())
+                    .append(" (available ").append(p.getStockQuantity())
+                    .append(", requested ").append(p.getOrderedQuantity()).append(")\n");
+        }
+        return sb.toString();
+    }
+
+
+    // Minimum payment rule and maximum quantity rule
+    private static final double MIN_TOTAL_PAYMENT = 5.0;
+    private static final int MAX_ALLOWED_QUANTITY = 50;
+
+    /**
+     * Checks business rules on the trolley:
+     * - total payment must be at least MIN_TOTAL_PAYMENT
+     * - each product's quantity must not exceed MAX_ALLOWED_QUANTITY
+     *
+     * If a rule is broken, a custom exception is thrown.
+     */
+    private void validateTrolley(ArrayList<Product> trolley)
+            throws UnderMinimumPaymentException, ExcessiveOrderQuantityException {
+
+        double total = 0.0;
+
+        for (Product p : trolley) {
+            int qty = Math.max(0, p.getOrderedQuantity()); // safeguard
+
+            // Rule 1: quantity per product must not exceed 50
+            if (qty > MAX_ALLOWED_QUANTITY) {
+                throw new ExcessiveOrderQuantityException(
+                        p.getProductId(),
+                        p.getProductDescription(),
+                        qty,
+                        MAX_ALLOWED_QUANTITY
+                );
+            }
+
+            // Add to total
+            total += p.getUnitPrice() * qty;
+        }
+
+        // Rule 2: total trolley value must be at least £5
+        if (total < MIN_TOTAL_PAYMENT) {
+            throw new UnderMinimumPaymentException(total, MIN_TOTAL_PAYMENT);
+        }
+    }
+
 }

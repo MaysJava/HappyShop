@@ -22,6 +22,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 /**
  * <p>{@code OrderHub} serves as the heart of the ordering system.
  * This class implements the Singleton pattern to ensure a single instance governs
@@ -59,16 +62,19 @@ public class OrderHub  {
      *   but collected orders are shown for a limited time (10 seconds).
      * - PickerModels will be notified only of orders in the "ordered" or "progressing" states, filtering out collected orders.
      */
-    private ArrayList<OrderTracker> orderTrackerList = new ArrayList<>();
     private ArrayList<PickerModel> pickerModelList = new ArrayList<>();
+
+    // Java built-in observer support (PropertyChangeSupport)
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     //Singleton pattern
     private OrderHub() {}
     public static OrderHub getOrderHub() {
-        if (orderHub == null)
+        if (orderHub == null) {
             orderHub = new OrderHub();
+        }
             return orderHub;
     }
 
@@ -86,22 +92,12 @@ public class OrderHub  {
         OrderFileManager.createOrderFile(path, orderId, orderDetail);
 
         orderMap.put(orderId, theOrder.getState()); //add the order to orderMap,state is Ordered initially
-        notifyOrderTrackers(); //notify OrderTrackers
+        fireOrderMapChanged(); //for PropertyChange Listeners
         notifyPickerModels();//notify pickers
         
         return theOrder;
     }
 
-    //Registers an OrderTracker to receive updates about changes.
-    public void registerOrderTracker(OrderTracker orderTracker){
-        orderTrackerList.add(orderTracker);
-    }
-     //Notifies all registered observer_OrderTrackers to update and display the latest orderMap.
-    public void notifyOrderTrackers(){
-        for(OrderTracker orderTracker : orderTrackerList){
-            orderTracker.setOrderMap(orderMap);
-        }
-    }
 
     //Registers a PickerModel to receive updates about changes.
     public void registerPickerModel(PickerModel pickerModel){
@@ -119,6 +115,20 @@ public class OrderHub  {
             pickerModel.setOrderMap(orderMapForPicker);
         }
     }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
+    private void fireOrderMapChanged() {
+        // Send a copy to protect the real internal map
+        pcs.firePropertyChange("orderMap", null, new TreeMap<>(orderMap));
+    }
+
 
     // Filters orderMap that match the specified state, a helper class used by notifyPickerModel()
     private TreeMap<Integer, OrderState> filterOrdersByState(OrderState state) {
@@ -139,7 +149,7 @@ public class OrderHub  {
         {
             //change orderState in OrderMap, notify OrderTrackers and pickers
             orderMap.put(orderId, newState);
-            notifyOrderTrackers();
+            fireOrderMapChanged();
             notifyPickerModels();
 
             //change orderState in order file and move the file to new state folder
@@ -169,7 +179,7 @@ public class OrderHub  {
             scheduler.schedule(() -> {
                 orderMap.remove(orderId); //remove collected order
                 System.out.println("Order " + orderId + " removed from tracker and OrdersMap.");
-                notifyOrderTrackers();
+                fireOrderMapChanged();
             }, 10, TimeUnit.SECONDS );
         }
     }
@@ -180,7 +190,7 @@ public class OrderHub  {
         if(state.equals(OrderState.Progressing)) {
             return OrderFileManager.readOrderFile(progressingPath,orderId);
         }else{
-            return "the fuction is only for picker";
+            return "the function is only for picker";
         }
     }
 
@@ -199,7 +209,7 @@ public class OrderHub  {
                 orderMap.put(orderId, OrderState.Progressing);
             }
         }
-        notifyOrderTrackers();
+        fireOrderMapChanged();
         notifyPickerModels();
         System.out.println("orderMap initilized. "+ orderMap.size() + " orders in total, including:");
         System.out.println( orderedIds.size() + " Ordered orders, " +progressingIds.size() + " Progressing orders " );
