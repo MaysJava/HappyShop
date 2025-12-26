@@ -19,6 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Comparator;
 
+import ci553.happyshop.payment.BasicPaymentService;
+import ci553.happyshop.payment.PaymentException;
+import ci553.happyshop.payment.PaymentMethod;
+import ci553.happyshop.payment.PaymentService;
+
+import javafx.scene.control.ChoiceDialog;
+
+import java.util.Optional;
+
 /**
  * TODO
  * You can either directly modify the CustomerModel class to implement the required tasks,
@@ -27,6 +36,8 @@ import java.util.Comparator;
 public class CustomerModel {
     public CustomerView cusView;
     public DatabaseRW databaseRW; // Interface type, not specific implementation
+
+    private final PaymentService paymentService = new BasicPaymentService();
 
     private Product theProduct = null; // product found from search
     private ArrayList<Product> trolley = new ArrayList<>(); // a list of products in trolley
@@ -41,6 +52,8 @@ public class CustomerModel {
     // SELECT productID, description, image, unitPrice, inStock quantity
     void search() throws SQLException {
         String productId = cusView.tfId.getText().trim();
+        String productName = cusView.tfName.getText().trim();
+
         if (!productId.isEmpty()) {
             theProduct = databaseRW.searchByProductId(productId); // search database
             if (theProduct != null && theProduct.getStockQuantity() > 0) {
@@ -57,12 +70,41 @@ public class CustomerModel {
                 displayLaSearchResult = "No Product was found with ID " + productId;
                 System.out.println("No Product was found with ID " + productId);
             }
+        }  else if (!productName.isEmpty()) {
+
+        ArrayList<Product> results = databaseRW.searchProduct(productName);
+
+        if (results != null && !results.isEmpty()) {
+            theProduct = results.get(0); // show the first match for now
+
+            double unitPrice = theProduct.getUnitPrice();
+            String description = theProduct.getProductDescription();
+            int stock = theProduct.getStockQuantity();
+
+            String baseInfo = String.format(
+                    "Showing 1 of %d match(es) for \"%s\"\nProduct_Id: %s\n%s,\nPrice: £%.2f",
+                    results.size(),
+                    productName,
+                    theProduct.getProductId(),
+                    description,
+                    unitPrice
+            );
+            String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
+            displayLaSearchResult = baseInfo + quantityInfo;
+
         } else {
             theProduct = null;
-            displayLaSearchResult = "Please type ProductID";
-            System.out.println("Please type ProductID.");
+            displayLaSearchResult = "No Product was found for keyword: " + productName;
         }
-        updateView();
+
+    } else {
+        theProduct = null;
+        displayLaSearchResult = "Please type ProductID or a Name keyword";
+        System.out.println("Please type ProductID or a Name keyword.");
+    }
+
+
+    updateView();
     }
 
     void addToTrolley() {
@@ -87,7 +129,6 @@ public class CustomerModel {
             updateView();
             return;
         }
-
         // 🧪 First: validate payment and quantities using our new business rules
         try {
             validateTrolley(trolley);
@@ -103,6 +144,26 @@ public class CustomerModel {
             updateView();
             return;
         }
+
+        double total = calculateTrolleyTotal();
+        PaymentMethod method = askPaymentMethod(total);
+
+        if (method == null) {
+            // user cancelled payment dialog
+            displayLaSearchResult = "Payment cancelled. Checkout aborted.";
+            updateView();
+            return;
+        }
+
+        try {
+            paymentService.pay(total, method);
+        } catch (PaymentException e) {
+            displayLaSearchResult = e.getMessage();
+            displayTaReceipt = "";
+            updateView();
+            return;
+        }
+
 
         // 👉 If we reach here, the trolley passed the new business rules.
         // Existing stock-check and order-creation logic stays the same:
@@ -168,6 +229,23 @@ public class CustomerModel {
         }
         return new ArrayList<>(grouped.values());
     }
+
+    private String formatProductInfo(Product p) {
+        double unitPrice = p.getUnitPrice();
+        String description = p.getProductDescription();
+        int stock = p.getStockQuantity();
+
+        String baseInfo = String.format(
+                "Product_Id: %s\n%s,\nPrice: £%.2f",
+                p.getProductId(),
+                description,
+                unitPrice
+        );
+
+        String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
+        return baseInfo + quantityInfo;
+    }
+
 
     void cancel() {
         trolley.clear();
@@ -291,5 +369,30 @@ public class CustomerModel {
             throw new UnderMinimumPaymentException(total, MIN_TOTAL_PAYMENT);
         }
     }
+
+    private double calculateTrolleyTotal() {
+        double total = 0.0;
+
+        for (Product p : trolley) {
+            int qty = p.getOrderedQuantity();
+            if (qty <= 0) qty = 1; // safety: some versions store items as repeated lines
+            total += p.getUnitPrice() * qty;
+        }
+
+        return total;
+    }
+
+    private PaymentMethod askPaymentMethod(double total) {
+        ChoiceDialog<PaymentMethod> dialog =
+                new ChoiceDialog<>(PaymentMethod.CARD, PaymentMethod.CASH, PaymentMethod.CARD);
+
+        dialog.setTitle("Payment");
+        dialog.setHeaderText(String.format("Your total is £%.2f", total));
+        dialog.setContentText("Choose payment method:");
+
+        Optional<PaymentMethod> result = dialog.showAndWait();
+        return result.orElse(null); // null means user cancelled
+    }
+
 
 }
