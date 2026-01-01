@@ -64,10 +64,18 @@ public class CustomerView  {
         lineContainer.setAlignment(Pos.CENTER);
 
         hbRoot = new HBox(10, vbSearchPage, lineContainer, vbTrolleyPage); //initialize to show trolleyPage
-        hbRoot.setAlignment(Pos.CENTER);
-        hbRoot.setStyle(UIStyle.rootStyle);
+        hbRoot.getStyleClass().add("root");
+        vbSearchPage.getStyleClass().add("card");
+        vbTrolleyPage.getStyleClass().add("card");
+        vbReceiptPage.getStyleClass().add("card");
+
 
         Scene scene = new Scene(hbRoot, WIDTH, HEIGHT);
+
+        scene.getStylesheets().add(
+                getClass().getResource("/styles/app.css").toExternalForm()
+        );
+
         window.setScene(scene);
         window.setTitle("🛒 HappyShop Customer Client");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
@@ -83,22 +91,22 @@ public class CustomerView  {
         laId.setStyle(UIStyle.labelStyle);
         tfId = new TextField();
         tfId.setPromptText("eg. 0001");
-        tfId.setStyle(UIStyle.textFiledStyle);
+        tfId.getStyleClass().add("input");
         HBox hbId = new HBox(10, laId, tfId);
 
         Label laName = new Label("Name:");
         laName.setStyle(UIStyle.labelStyle);
         tfName = new TextField();
         tfName.setPromptText("implement it if you want");
-        tfName.setStyle(UIStyle.textFiledStyle);
+        tfName.getStyleClass().add("input");
         HBox hbName = new HBox(10, laName, tfName);
 
         Label laPlaceHolder = new Label(  " ".repeat(15)); //create left-side spacing so that this HBox aligns with others in the layout.
         Button btnSearch = new Button("Search");
-        btnSearch.setStyle(UIStyle.buttonStyle);
+        btnSearch.getStyleClass().add("button-primary");
         btnSearch.setOnAction(this::buttonClicked);
         Button btnAddToTrolley = new Button("Add to Trolley");
-        btnAddToTrolley.setStyle(UIStyle.buttonStyle);
+        btnAddToTrolley.getStyleClass().add("button-primary");
         btnAddToTrolley.setOnAction(this::buttonClicked);
         HBox hbBtns = new HBox(10, laPlaceHolder,btnSearch, btnAddToTrolley);
 
@@ -128,21 +136,21 @@ public class CustomerView  {
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
         taTrolley = new TextArea();
+        taTrolley.getStyleClass().add("textarea");
         taTrolley.setEditable(false);
         taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
         // NEW: align columns nicely
-        taTrolley.setStyle("-fx-font-family: 'monospaced'; -fx-font-size: 12;");
         taTrolley.setWrapText(false);
 
 
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
-        btnCancel.setStyle(UIStyle.buttonStyle);
+        btnCancel.getStyleClass().add("button-secondary");
 
         Button btnCheckout = new Button("Check Out");
         btnCheckout.setOnAction(this::buttonClicked);
-        btnCheckout.setStyle(UIStyle.buttonStyle);
+        btnCheckout.getStyleClass().add("button-primary");
 
         HBox hbBtns = new HBox(10, btnCancel,btnCheckout);
         hbBtns.setStyle("-fx-padding: 15px;");
@@ -160,11 +168,12 @@ public class CustomerView  {
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
         taReceipt = new TextArea();
+        taReceipt.getStyleClass().add("textarea");
         taReceipt.setEditable(false);
         taReceipt.setPrefSize(WIDTH/2, HEIGHT-50);
 
         Button btnCloseReceipt = new Button("OK & Close"); //btn for closing receipt and showing trolley page
-        btnCloseReceipt.setStyle(UIStyle.buttonStyle);
+        btnCloseReceipt.getStyleClass().add("button-primary");
 
         btnCloseReceipt.setOnAction(this::buttonClicked);
 

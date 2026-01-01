@@ -1,0 +1,58 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-background-color: #f7f7fb;
+}
+
+/* Titles */
+.title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* Cards / panels */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0, 0, 6);
+}
+
+/* Inputs */
+.input {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #ddd;
+    -fx-padding: 8;
+}
+
+/* Text areas */
+.textarea {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #ddd;
+    -fx-font-family: "monospaced";
+}
+
+/* Buttons */
+.button {
+    -fx-background-radius: 10;
+    -fx-padding: 10 14;
+    -fx-font-weight: bold;
+}
+
+.button-primary {
+    -fx-background-color: #6c63ff;
+    -fx-text-fill: white;
+}
+
+.button-danger {
+    -fx-background-color: #ff4d6d;
+    -fx-text-fill: white;
+}
+
+.button-secondary {
+    -fx-background-color: #dddddd;
+    -fx-text-fill: black;
+}

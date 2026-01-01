@@ -46,6 +46,11 @@ public class PickerView  {
         vbOrderMapRoot = createOrderMapRoot();
         vbOrderDetailRoot = createOrderDetailRoot();
         scene = new Scene(vbOrderMapRoot, WIDTH, HEIGHT);
+
+        scene.getStylesheets().add(
+                getClass().getResource("/styles/app.css").toExternalForm()
+        );
+
         window.setScene(scene);
         window.setTitle("🛒 HappyShop Order Picker");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
@@ -62,39 +67,39 @@ public class PickerView  {
 
     private VBox createOrderMapRoot() {
         Label laOrderMapRootTitle = new Label("Orders Waiting for Processing");
-        laOrderMapRootTitle.setStyle(UIStyle.labelTitleStyle);
+        laOrderMapRootTitle.getStyleClass().add("title");
 
         taOrderMap.setEditable(false);
         taOrderMap.setPrefSize(WIDTH, HEIGHT - 100);
-        taOrderMap.setStyle(UIStyle.textFiledStyle);
+        taOrderMap.getStyleClass().add("textarea");
 
         Button btnProgressing = new Button("Progressing");
         btnProgressing.setOnAction(this::buttonClicked);
-        btnProgressing.setStyle(UIStyle.buttonStyle);
+        btnProgressing.getStyleClass().addAll("button", "button-primary");
 
         VBox vbOrdersListRoot = new VBox(15, laOrderMapRootTitle, taOrderMap, btnProgressing);
         vbOrdersListRoot.setAlignment(Pos.TOP_CENTER);
-        vbOrdersListRoot.setStyle(UIStyle.rootStyleYellow);
+        vbOrdersListRoot.getStyleClass().add("card");
 
         return vbOrdersListRoot;
     }
 
     private VBox createOrderDetailRoot() {
         laDetailRootTitle = new Label("Progressing Order Details");
-        laDetailRootTitle.setStyle(UIStyle.labelTitleStyle);
+        laDetailRootTitle.getStyleClass().add("title");
 
         taOrderDetail.setEditable(false);
         taOrderDetail.setPrefSize(WIDTH, HEIGHT - 100);
         taOrderDetail.setText("Order details");
-        taOrderDetail.setStyle(UIStyle.textFiledStyle);
+        taOrderDetail.getStyleClass().add("textarea");
 
         Button btnCollected = new Button("Customer Collected");
         btnCollected.setOnAction(this::buttonClicked);
-        btnCollected.setStyle(UIStyle.buttonStyle);
+        btnCollected.getStyleClass().addAll("button", "button-primary");
 
         VBox vbOrderDetailsRoot = new VBox(15, laDetailRootTitle, taOrderDetail, btnCollected);
         vbOrderDetailsRoot.setAlignment(Pos.TOP_CENTER);
-        vbOrderDetailsRoot.setStyle(UIStyle.rootStyleBlue);
+        vbOrderDetailsRoot.getStyleClass().add("card");
 
         return vbOrderDetailsRoot;
     }

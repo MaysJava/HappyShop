@@ -56,6 +56,11 @@ public class OrderTracker implements PropertyChangeListener {
         vbox.setStyle(UIStyle.rootStyleGray);
 
         Scene scene = new Scene(vbox, WIDTH, HEIGHT);
+
+        scene.getStylesheets().add(
+                getClass().getResource("/styles/app.css").toExternalForm()
+        );
+
         Stage window = new Stage();
         window.setScene(scene);
         window.setTitle("🛒Order Tracker");

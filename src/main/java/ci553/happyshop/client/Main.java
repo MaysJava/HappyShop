@@ -42,22 +42,7 @@ public class Main extends Application {
     //starts the system
     @Override
     public void start(Stage window) throws IOException {
-        startCustomerClient();
-        startPickerClient();
-        startOrderTracker();
-
-        startCustomerClient();
-        startPickerClient();
-        startOrderTracker();
-
-        // Initializes the order map for the OrderHub. This must be called after starting the observer clients
-        // (such as OrderTracker and Picker clients) to ensure they are properly registered for receiving updates.
-        initializeOrderMap();
-
-        startWarehouseClient();
-        startWarehouseClient();
-
-        startEmergencyExit();
+        startLoginClient();
     }
 
     /** The customer GUI -search prodduct, add to trolley, cancel/submit trolley, view receipt
@@ -156,6 +141,18 @@ public class Main extends Application {
     private void startEmergencyExit(){
         EmergencyExit.getEmergencyExit();
     }
+
+    private void startLoginClient() {
+        // Create MVC for login
+        ci553.happyshop.client.login.LoginView view = new ci553.happyshop.client.login.LoginView();
+        ci553.happyshop.client.login.LoginModel model = new ci553.happyshop.client.login.LoginModel();
+        ci553.happyshop.client.login.LoginController controller =
+                new ci553.happyshop.client.login.LoginController(view, model);
+
+        view.loginController = controller; // link view -> controller
+        view.start(new Stage());           // show login window
+    }
+
 }
 
 
