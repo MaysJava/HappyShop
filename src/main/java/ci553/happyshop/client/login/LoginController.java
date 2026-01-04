@@ -20,9 +20,20 @@ public class LoginController {
     private final LoginView view;
     private final LoginModel model;
 
+    private LoginModel.Role requiredRole = null; // null = allow any
+    private Runnable onSuccess = null;
+
     public LoginController(LoginView view, LoginModel model) {
         this.view = view;
         this.model = model;
+    }
+
+    public void setRequiredRole(LoginModel.Role requiredRole) {
+        this.requiredRole = requiredRole;
+    }
+
+    public void setOnSuccess(Runnable onSuccess) {
+        this.onSuccess = onSuccess;
     }
 
     public void doLogin(String username, String password) {
@@ -34,68 +45,19 @@ public class LoginController {
             return;
         }
 
-        // ✅ close login window
-        view.getWindow().close();
+        // If this login was opened for a specific role (from manager buttons)
+        if (requiredRole != null && role != requiredRole) {
+            view.showMessage("This button requires: " + requiredRole);
+            return;
+        }
 
-        // ✅ open the chosen client
-        switch (role) {
-            case CUSTOMER -> startCustomerClient();
-            case PICKER -> startPickerClient();
-            case WAREHOUSE -> startWarehouseClient();
-            case TRACKER -> startOrderTrackerClient();
+        // Close login window
+        Stage loginStage = view.getWindow();
+        loginStage.close();
+
+        // Run success action (open manager or open client)
+        if (onSuccess != null) {
+            onSuccess.run();
         }
     }
-
-    private void startCustomerClient() {
-        CustomerView cusView = new CustomerView();
-        CustomerController cusController = new CustomerController();
-        CustomerModel cusModel = new CustomerModel();
-        DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
-
-        cusView.cusController = cusController;
-        cusController.cusModel = cusModel;
-        cusModel.cusView = cusView;
-        cusModel.databaseRW = databaseRW;
-
-        cusView.start(new Stage());
-    }
-
-    private void startPickerClient() {
-        PickerModel pickerModel = new PickerModel();
-        PickerView pickerView = new PickerView();
-        PickerController pickerController = new PickerController();
-
-        pickerView.pickerController = pickerController;
-        pickerController.pickerModel = pickerModel;
-        pickerModel.pickerView = pickerView;
-
-        pickerModel.registerWithOrderHub();
-        pickerView.start(new Stage());
-
-        // optional but good: ensure orderhub map exists
-        OrderHub.getOrderHub().initializeOrderMap();
-    }
-
-    private void startWarehouseClient() {
-        WarehouseView view = new WarehouseView();
-        WarehouseController controller = new WarehouseController();
-        WarehouseModel model = new WarehouseModel();
-        DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
-
-        view.controller = controller;
-        controller.model = model;
-        model.view = view;
-        model.databaseRW = databaseRW;
-
-        view.start(new Stage());
-    }
-
-    private void startOrderTrackerClient() {
-        OrderTracker orderTracker = new OrderTracker();
-        orderTracker.registerWithOrderHub();
-
-        // optional but good: ensure orderhub map exists
-        OrderHub.getOrderHub().initializeOrderMap();
-    }
 }
-

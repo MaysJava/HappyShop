@@ -25,5 +25,13 @@ public class CustomerController {
                 break;
         }
     }
+    public void removeItem(String productId) {
+        cusModel.removeFromTrolley(productId);
+    }
+
+    public void changeQty(String productId, int qty) {
+        cusModel.setQuantity(productId, qty);
+    }
+
 
 }

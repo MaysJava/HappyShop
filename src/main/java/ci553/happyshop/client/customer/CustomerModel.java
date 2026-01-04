@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Comparator;
+import ci553.happyshop.payment.ExternalPaymentAdapter;
+import java.util.Iterator;
+
 
 import ci553.happyshop.payment.BasicPaymentService;
 import ci553.happyshop.payment.PaymentException;
@@ -37,7 +40,7 @@ public class CustomerModel {
     public CustomerView cusView;
     public DatabaseRW databaseRW; // Interface type, not specific implementation
 
-    private final PaymentService paymentService = new BasicPaymentService();
+    private final PaymentService paymentService = new ExternalPaymentAdapter();
 
     private Product theProduct = null; // product found from search
     private ArrayList<Product> trolley = new ArrayList<>(); // a list of products in trolley
@@ -392,6 +395,30 @@ public class CustomerModel {
 
         Optional<PaymentMethod> result = dialog.showAndWait();
         return result.orElse(null); // null means user cancelled
+    }
+
+    // ✅ Option B helpers
+    public void removeFromTrolley(String productId) {
+        trolley.removeIf(p -> p.getProductId().equals(productId));
+        displayTaTrolley = ProductListFormatter.buildString(trolley);
+        updateView();
+    }
+
+    public void setQuantity(String productId, int qty) {
+        if (qty < 1) qty = 1;
+
+        for (Product p : trolley) {
+            if (p.getProductId().equals(productId)) {
+                p.setOrderedQuantity(qty);
+                break;
+            }
+        }
+        displayTaTrolley = ProductListFormatter.buildString(trolley);
+        updateView();
+    }
+
+    public ArrayList<Product> getTrolleyItems() {
+        return trolley;
     }
 
 

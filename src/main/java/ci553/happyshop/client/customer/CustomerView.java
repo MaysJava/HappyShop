@@ -18,6 +18,35 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Priority;
+import javafx.util.Callback;
+import ci553.happyshop.catalogue.Product;
+
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
+
+
 /**
  * The CustomerView is separated into two sections by a line :
  *
@@ -45,6 +74,10 @@ public class CustomerView  {
     private Label lbProductInfo;//product text info in searchPage
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
+
+
+    private ListView<Product> lvTrolley;
+
 
     // Holds a reference to this CustomerView window for future access and management
     // (e.g., positioning the removeProductNotifier when needed).
@@ -109,7 +142,6 @@ public class CustomerView  {
         btnAddToTrolley.getStyleClass().add("button-primary");
         btnAddToTrolley.setOnAction(this::buttonClicked);
         HBox hbBtns = new HBox(10, laPlaceHolder,btnSearch, btnAddToTrolley);
-
         ivProduct = new ImageView("imageHolder.jpg");
         ivProduct.setFitHeight(60);
         ivProduct.setFitWidth(60);
@@ -135,14 +167,49 @@ public class CustomerView  {
         Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
-        taTrolley = new TextArea();
-        taTrolley.getStyleClass().add("textarea");
-        taTrolley.setEditable(false);
-        taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
-        // NEW: align columns nicely
-        taTrolley.setWrapText(false);
 
+        lvTrolley = new ListView<>();
+        lvTrolley.setPrefSize(WIDTH / 2, HEIGHT - 120);
+        lvTrolley.getStyleClass().add("list"); // optional css class
 
+        // ✅ Each row has: info + qty spinner + remove button
+        lvTrolley.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(Product p, boolean empty) {
+                super.updateItem(p, empty);
+
+                if (empty || p == null) {
+                    setText(null);
+                    setGraphic(null);
+                    return;
+                }
+
+                Label info = new Label(
+                        p.getProductId() + "  |  " + p.getProductDescription() + "  |  £" + String.format("%.2f", p.getUnitPrice())
+                );
+                info.setWrapText(true);
+
+                int currentQty = Math.max(1, p.getOrderedQuantity());
+                Spinner<Integer> qtySpinner = new Spinner<>(1, 50, currentQty);
+                qtySpinner.setPrefWidth(80);
+
+                // When qty changes -> controller -> model
+                qtySpinner.valueProperty().addListener((obs, oldV, newV) -> {
+                    if (newV != null) {
+                        cusController.changeQty(p.getProductId(), newV);
+                    }
+                });
+
+                Button btnRemove = new Button("🗑");
+                btnRemove.getStyleClass().add("button-danger");
+                btnRemove.setOnAction(e -> cusController.removeItem(p.getProductId()));
+
+                HBox row = new HBox(10, info, qtySpinner, btnRemove);
+                row.setAlignment(Pos.CENTER_LEFT);
+
+                setGraphic(row);
+            }
+        });
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
@@ -152,16 +219,16 @@ public class CustomerView  {
         btnCheckout.setOnAction(this::buttonClicked);
         btnCheckout.getStyleClass().add("button-primary");
 
-        HBox hbBtns = new HBox(10, btnCancel,btnCheckout);
-        hbBtns.setStyle("-fx-padding: 15px;");
+        HBox hbBtns = new HBox(10, btnCancel, btnCheckout);
         hbBtns.setAlignment(Pos.CENTER);
 
-        vbTrolleyPage = new VBox(15, laPageTitle, taTrolley, hbBtns);
+        VBox vbTrolleyPage = new VBox(15, laPageTitle, lvTrolley, hbBtns);
         vbTrolleyPage.setPrefWidth(COLUMN_WIDTH);
         vbTrolleyPage.setAlignment(Pos.TOP_CENTER);
         vbTrolleyPage.setStyle("-fx-padding: 15px;");
         return vbTrolleyPage;
     }
+
 
     private VBox createReceiptPage() {
         Label laPageTitle = new Label("Receipt");
@@ -209,7 +276,9 @@ public class CustomerView  {
 
         ivProduct.setImage(new Image(imageName));
         lbProductInfo.setText(searchResult);
-        taTrolley.setText(trolley);
+        // Instead of showing the string, show real items:
+        lvTrolley.getItems().setAll(cusController.cusModel.getTrolleyItems());
+
         if (!receipt.equals("")) {
             showTrolleyOrReceiptPage(vbReceiptPage);
             taReceipt.setText(receipt);
