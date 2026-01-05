@@ -45,6 +45,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 
 
 /**
@@ -134,14 +136,18 @@ public class CustomerView  {
         tfName.getStyleClass().add("input");
         HBox hbName = new HBox(10, laName, tfName);
 
-        Label laPlaceHolder = new Label(  " ".repeat(15)); //create left-side spacing so that this HBox aligns with others in the layout.
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        //create left-side spacing so that this HBox aligns with others in the layout.
         Button btnSearch = new Button("Search");
-        btnSearch.getStyleClass().add("button-primary");
+        btnSearch.getStyleClass().addAll("button", "button-primary");
         btnSearch.setOnAction(this::buttonClicked);
         Button btnAddToTrolley = new Button("Add to Trolley");
-        btnAddToTrolley.getStyleClass().add("button-primary");
+        btnAddToTrolley.getStyleClass().addAll("button", "button-primary");
         btnAddToTrolley.setOnAction(this::buttonClicked);
-        HBox hbBtns = new HBox(10, laPlaceHolder,btnSearch, btnAddToTrolley);
+        HBox hbBtns = new HBox(10, spacer, btnSearch, btnAddToTrolley);
+        hbBtns.setAlignment(Pos.CENTER_RIGHT);
+
         ivProduct = new ImageView("imageHolder.jpg");
         ivProduct.setFitHeight(60);
         ivProduct.setFitWidth(60);
@@ -213,11 +219,11 @@ public class CustomerView  {
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
-        btnCancel.getStyleClass().add("button-secondary");
+        btnCancel.getStyleClass().addAll("button", "button-secondary");
 
         Button btnCheckout = new Button("Check Out");
         btnCheckout.setOnAction(this::buttonClicked);
-        btnCheckout.getStyleClass().add("button-primary");
+        btnCheckout.getStyleClass().addAll("button", "button-primary");
 
         HBox hbBtns = new HBox(10, btnCancel, btnCheckout);
         hbBtns.setAlignment(Pos.CENTER);

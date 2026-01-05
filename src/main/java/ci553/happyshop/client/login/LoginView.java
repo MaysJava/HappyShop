@@ -56,12 +56,16 @@ public class LoginView {
         root.setPadding(new Insets(30));
         root.getStyleClass().add("root");
 
-        Scene scene = new Scene(root, 420, 360);
+        Scene scene = new Scene(root, 620, 560); // bigger
+
+        window.setMinWidth(620);
+        window.setMinHeight(560);
+
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
 
         window.setScene(scene);
         window.setTitle("HappyShop Login");
-        WinPosManager.registerWindow(window, 420, 360);
+        WinPosManager.registerWindow(window, 620, 560);
         window.show();
     }
 

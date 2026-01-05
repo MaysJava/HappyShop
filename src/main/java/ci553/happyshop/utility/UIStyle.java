@@ -40,19 +40,19 @@ public final class UIStyle {
         throw new UnsupportedOperationException("UIStyle is a utility class");
     }
 
-    public static final int customerWinWidth = 600;
-    public static final int customerWinHeight = 300;
+    public static final int customerWinWidth = 1000;
+    public static final int customerWinHeight = 600;
     public static final int removeProNotifierWinWidth = customerWinWidth/2 +160;
     public static final int removeProNotifierWinHeight = 230;
 
-    public static final int pickerWinWidth = 310;
-    public static final int pickerWinHeight = 300;
+    public static final int pickerWinWidth = 700;
+    public static final int pickerWinHeight = 600;
 
     public static final int trackerWinWidth = 210;
     public static final int trackerWinHeight = 300;
 
-    public static final int warehouseWinWidth = 630;
-    public static final int warehouseWinHeight = 300;
+    public static final int warehouseWinWidth = 1100;
+    public static final int warehouseWinHeight = 650;
     public static final int AlertSimWinWidth = 300;
     public static final int AlertSimWinHeight = 170;
     public static final int HistoryWinWidth = 300;
@@ -60,6 +60,7 @@ public final class UIStyle {
 
     public static final int EmergencyExitWinWidth = 200;
     public static final int EmergencyExitWinHeight = 300;
+
 
     public static final String labelTitleStyle ="-fx-font-weight: bold; " +
             "-fx-font-size: 16px; -fx-text-fill: purple;";

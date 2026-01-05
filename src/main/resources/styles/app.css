@@ -1,45 +1,84 @@
+/* ---------- Global ---------- */
 .root {
-    -fx-font-family: "Arial";
-    -fx-font-size: 13px;
+    -fx-font-family: "Inter", "Segoe UI", "Arial";
+    -fx-font-size: 14px;
     -fx-background-color: #f7f7fb;
 }
 
-/* Titles */
-.title {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
+/* Containers */
+.page {
+    -fx-padding: 22;
+    -fx-spacing: 14;
 }
 
-/* Cards / panels */
 .card {
     -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
     -fx-padding: 18;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0, 0, 6);
 }
 
-/* Inputs */
-.input {
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: #ddd;
-    -fx-padding: 8;
+.card-tight {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 14, 0, 0, 5);
 }
 
-/* Text areas */
-.textarea {
-    -fx-background-radius: 10;
+/* Text */
+.title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5b5f76;
+}
+
+.muted {
+    -fx-text-fill: #6b7280;
+}
+
+/* Inputs */
+.input, .text-field, .password-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d6d7e2;
     -fx-border-radius: 10;
-    -fx-border-color: #ddd;
-    -fx-font-family: "monospaced";
+    -fx-background-radius: 10;
+    -fx-padding: 10 12;
+}
+
+.input:focused, .text-field:focused, .password-field:focused {
+    -fx-border-color: #6c63ff;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.25), 10, 0, 0, 0);
+}
+
+/* TextAreas */
+.textarea, .text-area {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d6d7e2;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+.mono {
+    -fx-font-family: "Consolas", "Menlo", "Monaco", monospace;
 }
 
 /* Buttons */
 .button {
     -fx-background-radius: 10;
     -fx-padding: 10 14;
-    -fx-font-weight: bold;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
 }
 
 .button-primary {
@@ -47,12 +86,24 @@
     -fx-text-fill: white;
 }
 
+.button-primary:hover {
+    -fx-background-color: #5b53ff;
+}
+
+.button-secondary {
+    -fx-background-color: #eef0ff;
+    -fx-text-fill: #2b2f55;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #e4e6ff;
+}
+
 .button-danger {
     -fx-background-color: #ff4d6d;
     -fx-text-fill: white;
 }
 
-.button-secondary {
-    -fx-background-color: #dddddd;
-    -fx-text-fill: black;
+.button-danger:hover {
+    -fx-background-color: #ff3b60;
 }
