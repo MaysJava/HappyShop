@@ -42,11 +42,9 @@ public class Main extends Application {
         launch(args); // Launches the JavaFX application and calls the @Override start()
     }
 
-    //starts the system
     @Override
-    public void start(Stage window) throws IOException {
-        // Start with login only
-        LoginClient.showLoginAndOpenManager();
+    public void start(Stage primaryStage) {
+        new ci553.happyshop.client.home.HomeClient().start(primaryStage);
     }
 
 
@@ -100,9 +98,11 @@ public class Main extends Application {
     //This client is simple and does not follow the MVC pattern, as it only registers with the OrderHub
     //to receive order status notifications. All logic is handled internally within the OrderTracker.
     private void startOrderTracker(){
-        OrderTracker orderTracker = new OrderTracker();
+        Stage trackerStage = new Stage();
+        OrderTracker orderTracker = new OrderTracker(trackerStage);
         orderTracker.registerWithOrderHub();
     }
+
 
     //initialize the orderMap<orderId, orderState> for OrderHub during system startup
     private void initializeOrderMap(){

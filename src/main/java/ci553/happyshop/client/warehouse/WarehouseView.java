@@ -148,6 +148,17 @@ public class WarehouseView  {
 
         Scene scene = new Scene(hbRoot, WIDTH, HEIGHT);
         window.setScene(scene);
+
+        scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+
+
+        window.setWidth(WIDTH);
+        window.setHeight(HEIGHT);
+        window.setMinWidth(WIDTH);
+        window.setMinHeight(HEIGHT);
+        window.setResizable(false);
+
+
         window.setTitle("Search_Page  🛒🛒HappyShop_Warehouse🛒🛒  ProductForm_Page(Edit & AddNew Product)");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); // Registers the window with WinPosManager to
         // dynamically position itself based on its size, and any already displayed windows.

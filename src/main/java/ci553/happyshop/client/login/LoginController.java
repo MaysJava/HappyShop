@@ -1,18 +1,5 @@
 package ci553.happyshop.client.login;
 
-import ci553.happyshop.client.customer.CustomerController;
-import ci553.happyshop.client.customer.CustomerModel;
-import ci553.happyshop.client.customer.CustomerView;
-import ci553.happyshop.client.orderTracker.OrderTracker;
-import ci553.happyshop.client.picker.PickerController;
-import ci553.happyshop.client.picker.PickerModel;
-import ci553.happyshop.client.picker.PickerView;
-import ci553.happyshop.client.warehouse.WarehouseController;
-import ci553.happyshop.client.warehouse.WarehouseModel;
-import ci553.happyshop.client.warehouse.WarehouseView;
-import ci553.happyshop.storageAccess.DatabaseRW;
-import ci553.happyshop.storageAccess.DatabaseRWFactory;
-import ci553.happyshop.orderManagement.OrderHub;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -28,8 +15,8 @@ public class LoginController {
         this.model = model;
     }
 
-    public void setRequiredRole(LoginModel.Role requiredRole) {
-        this.requiredRole = requiredRole;
+    public void setRequiredRole(LoginModel.Role role) {
+        this.requiredRole = role;
     }
 
     public void setOnSuccess(Runnable onSuccess) {
@@ -45,19 +32,21 @@ public class LoginController {
             return;
         }
 
-        // If this login was opened for a specific role (from manager buttons)
+        // If a role is required (e.g. WAREHOUSE), block wrong roles
         if (requiredRole != null && role != requiredRole) {
-            view.showMessage("This button requires: " + requiredRole);
+            view.showMessage("Access denied. This login is for " + requiredRole);
             return;
         }
 
+
+        view.showMessage("Login successful!");
+
         // Close login window
         Stage loginStage = view.getWindow();
-        loginStage.close();
-
-        // Run success action (open manager or open client)
+        loginStage.hide();
         if (onSuccess != null) {
-            onSuccess.run();
+            javafx.application.Platform.runLater(onSuccess);
         }
+
     }
 }

@@ -47,22 +47,46 @@ public class PickerView  {
         vbOrderDetailRoot = createOrderDetailRoot();
         scene = new Scene(vbOrderMapRoot, WIDTH, HEIGHT);
 
+
         scene.getStylesheets().add(
                 getClass().getResource("/styles/app.css").toExternalForm()
         );
+
+        scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+
+        window.setWidth(WIDTH);
+        window.setHeight(HEIGHT);
+        window.setMinWidth(WIDTH);
+        window.setMinHeight(HEIGHT);
+        window.setResizable(false);
+
 
         window.setScene(scene);
         window.setTitle("🛒 HappyShop Order Picker");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
         window.show();
 
-        // Set the window close request to prevent closing if the order is not collected
         window.setOnCloseRequest(event -> {
             if (!taOrderDetail.getText().equals("")) {
-                event.consume(); // Prevent window from closing
-                laDetailRootTitle.setText("Pls complete the order before closing.");
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Close Picker?");
+                alert.setHeaderText("Order not completed");
+                alert.setContentText("This order is not finished. Are you sure you want to close the Picker window?");
+
+                ButtonType closeAnyway = new ButtonType("Close anyway");
+                ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                alert.getButtonTypes().setAll(closeAnyway, cancel);
+
+                ButtonType result = alert.showAndWait().orElse(cancel);
+
+                if (result == cancel) {
+                    event.consume(); // only block if they choose Cancel
+                }
             }
         });
+
     }
 
     private VBox createOrderMapRoot() {

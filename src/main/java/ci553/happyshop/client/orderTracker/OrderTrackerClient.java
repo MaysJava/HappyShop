@@ -19,7 +19,8 @@ public class OrderTrackerClient extends Application {
 
     @Override
     public void start(Stage window) {
-        OrderTracker orderTracker = new OrderTracker();
+        OrderTracker orderTracker = new OrderTracker(window); // pass stage in
         orderTracker.registerWithOrderHub();
     }
+
 }

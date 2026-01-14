@@ -40,6 +40,14 @@ public final class WinPosManager {
         throw new UnsupportedOperationException("final_static class does not have object");
     }
 
+    public static void resetSession() {
+        occupiedWidth = 0;
+        occupiedHeight = 0;
+        x = BASE_X;
+        y = BASE_Y;
+    }
+
+
     public static void registerWindow(Stage stage, double width, double height) {
         // Case 1: Fits in current row and within screen height
         if ((occupiedWidth + width < SCREEN_WIDTH - BASE_X) &&

@@ -3,6 +3,11 @@ package ci553.happyshop.client.customer;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.utility.WindowManager;
+
+
+
 public class CustomerController {
     public CustomerModel cusModel;
 
@@ -32,6 +37,15 @@ public class CustomerController {
     public void changeQty(String productId, int qty) {
         cusModel.setQuantity(productId, qty);
     }
+
+    public void selectSearchResult(Product p) {
+        cusModel.selectProductFromList(p);
+    }
+
+    public void goBackToHome() {
+        WindowManager.backToHome();
+    }
+
 
 
 }

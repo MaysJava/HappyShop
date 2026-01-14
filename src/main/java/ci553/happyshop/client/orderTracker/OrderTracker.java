@@ -29,7 +29,7 @@ public class OrderTracker implements PropertyChangeListener {
 
     // TreeMap (orderID,state) holding order IDs and their corresponding states.
     private final TreeMap<Integer, OrderState> ordersMap = new TreeMap<>();
-    private final TextArea taDisplay; //area to show all orderId and their state on the GUI
+    private TextArea taDisplay; //area to show all orderId and their state on the GUI
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -43,7 +43,7 @@ public class OrderTracker implements PropertyChangeListener {
 
 
     //Constructor initializes the UI, a title Label, and a TextArea for displaying the order details.
-    public OrderTracker() {
+    public OrderTracker(Stage window) {
         Label laTitle = new Label("Order_ID,  State");
         laTitle.setStyle(UIStyle.labelTitleStyle);
 
@@ -51,24 +51,27 @@ public class OrderTracker implements PropertyChangeListener {
         taDisplay.setEditable(false);
         taDisplay.setStyle(UIStyle.textFiledStyle);
 
-        VBox vbox = new VBox(10,laTitle, taDisplay);
+        VBox vbox = new VBox(10, laTitle, taDisplay);
         vbox.setAlignment(Pos.TOP_CENTER);
         vbox.setStyle(UIStyle.rootStyleGray);
 
         Scene scene = new Scene(vbox, WIDTH, HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
 
-        scene.getStylesheets().add(
-                getClass().getResource("/styles/app.css").toExternalForm()
-        );
-
-        Stage window = new Stage();
+        // ✅ USE the stage passed in (do NOT create a new Stage)
         window.setScene(scene);
-        window.setTitle("🛒Order Tracker");
+        window.setTitle("🛒 Order Tracker");
 
-        // Registers the window's position with WinPosManager.
-        WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
+        window.setWidth(360);
+        window.setHeight(520);
+        window.setMinWidth(360);
+        window.setMinHeight(520);
+        window.setResizable(false);
+
+        WinPosManager.registerWindow(window, WIDTH, HEIGHT);
         window.show();
     }
+
 
     /**
      * Registers this OrderTracker instance with the OrderHub.

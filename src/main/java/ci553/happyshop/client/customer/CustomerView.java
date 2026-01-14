@@ -48,6 +48,12 @@ import java.util.ArrayList;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 
+import java.util.List;
+import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.utility.WindowManager;
+
+
+
 
 /**
  * The CustomerView is separated into two sections by a line :
@@ -76,6 +82,12 @@ public class CustomerView  {
     private Label lbProductInfo;//product text info in searchPage
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
+
+    private ListView<Product> lvSearchResults;
+
+    private Label laMatches;
+
+
 
 
     private ListView<Product> lvTrolley;
@@ -111,6 +123,13 @@ public class CustomerView  {
                 getClass().getResource("/styles/app.css").toExternalForm()
         );
 
+        window.setWidth(WIDTH);
+        window.setHeight(HEIGHT);
+        window.setMinWidth(WIDTH);
+        window.setMinHeight(HEIGHT);
+        window.setResizable(false);
+
+
         window.setScene(scene);
         window.setTitle("🛒 HappyShop Customer Client");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
@@ -119,7 +138,7 @@ public class CustomerView  {
     }
 
     private VBox createSearchPage() {
-        Label laPageTitle = new Label("Search by Product ID/Name");
+        Label laPageTitle = new Label("Search Product");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
         Label laId = new Label("ID:      ");
@@ -161,7 +180,55 @@ public class CustomerView  {
         HBox hbSearchResult = new HBox(5, ivProduct, lbProductInfo);
         hbSearchResult.setAlignment(Pos.CENTER_LEFT);
 
-        VBox vbSearchPage = new VBox(15, laPageTitle, hbId, hbName, hbBtns, hbSearchResult);
+        laMatches = new Label("Matches");
+        laMatches.getStyleClass().add("muted");
+
+        lvSearchResults = new ListView<>();
+        lvSearchResults.setPrefHeight(110);   // ✅ fixed height
+        lvSearchResults.setMinHeight(110);    // ✅ stops shrinking weirdly
+        lvSearchResults.setMaxHeight(110);    // ✅ stops growing (important!)
+        lvSearchResults.setPrefWidth(COLUMN_WIDTH - 30);
+
+
+
+        lvSearchResults.getStyleClass().add("list");
+
+
+        laMatches.setVisible(false);
+        laMatches.setManaged(false);
+
+        lvSearchResults.setVisible(false);
+        lvSearchResults.setManaged(false);
+
+
+
+
+        lvSearchResults.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(Product p, boolean empty) {
+                super.updateItem(p, empty);
+                if (empty || p == null) {
+                    setText(null);
+                } else {
+                    setText(p.getProductId() + " - " + p.getProductDescription()
+                            + " (£" + String.format("%.2f", p.getUnitPrice()) + ", Stock " + p.getStockQuantity() + ")");
+                }
+            }
+        });
+
+        lvSearchResults.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
+            if (newP != null && cusController != null) {
+                try {
+                    cusController.selectSearchResult(newP);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+
+        VBox vbSearchPage = new VBox(15, laPageTitle, hbId, hbName, hbBtns, hbSearchResult, laMatches, lvSearchResults);
         vbSearchPage.setPrefWidth(COLUMN_WIDTH);
         vbSearchPage.setAlignment(Pos.TOP_CENTER);
         vbSearchPage.setStyle("-fx-padding: 15px;");
@@ -169,8 +236,13 @@ public class CustomerView  {
         return vbSearchPage;
     }
 
+    public Product getSelectedSearchResult() {
+        return (lvSearchResults == null) ? null : lvSearchResults.getSelectionModel().getSelectedItem();
+    }
+
+
     private VBox CreateTrolleyPage() {
-        Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
+        Label laPageTitle = new Label(" Trolley 🛒🛒");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
 
@@ -217,6 +289,10 @@ public class CustomerView  {
             }
         });
 
+        Button btnBack = new Button("Back to Main Menu");
+        btnBack.getStyleClass().addAll("button", "button-secondary");
+        btnBack.setOnAction(e -> WindowManager.backToHome());
+
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
         btnCancel.getStyleClass().addAll("button", "button-secondary");
@@ -225,8 +301,9 @@ public class CustomerView  {
         btnCheckout.setOnAction(this::buttonClicked);
         btnCheckout.getStyleClass().addAll("button", "button-primary");
 
-        HBox hbBtns = new HBox(10, btnCancel, btnCheckout);
+        HBox hbBtns = new HBox(10, btnBack, btnCancel, btnCheckout);
         hbBtns.setAlignment(Pos.CENTER);
+
 
         VBox vbTrolleyPage = new VBox(15, laPageTitle, lvTrolley, hbBtns);
         vbTrolleyPage.setPrefWidth(COLUMN_WIDTH);
@@ -274,6 +351,25 @@ public class CustomerView  {
             e.printStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public void showSearchMatches(List<Product> matches) {
+        if (matches != null && !matches.isEmpty()) {
+            lvSearchResults.getItems().setAll(matches);
+
+            laMatches.setVisible(true);
+            laMatches.setManaged(true);
+
+            lvSearchResults.setVisible(true);
+            lvSearchResults.setManaged(true);
+        } else {
+            lvSearchResults.getItems().clear();
+
+            laMatches.setVisible(false);
+            laMatches.setManaged(false);
+
+            lvSearchResults.setVisible(false);
+            lvSearchResults.setManaged(false);
         }
     }
 

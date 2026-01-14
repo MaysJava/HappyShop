@@ -13,10 +13,9 @@
 
 .card {
     -fx-background-color: white;
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
-    -fx-padding: 18;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0, 0, 6);
+    -fx-background-radius: 18;
+    -fx-padding: 34;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 8);
 }
 
 .card-tight {
@@ -29,13 +28,21 @@
 
 /* Text */
 .title {
-    -fx-font-size: 22px;
+    -fx-font-size: 30px;
     -fx-font-weight: 800;
+    -fx-text-fill: #6c4df6;
 }
 
 .subtitle {
     -fx-font-size: 14px;
-    -fx-text-fill: #5b5f76;
+    -fx-text-fill: #777;
+    -fx-padding: 0 0 10 0;
+}
+
+.footer {
+    -fx-font-size: 11px;
+    -fx-text-fill: #aaa;
+    -fx-padding: 14 0 0 0;
 }
 
 .muted {

@@ -41,18 +41,18 @@ public final class UIStyle {
     }
 
     public static final int customerWinWidth = 1000;
-    public static final int customerWinHeight = 600;
+    public static final int customerWinHeight = 620;
     public static final int removeProNotifierWinWidth = customerWinWidth/2 +160;
     public static final int removeProNotifierWinHeight = 230;
 
-    public static final int pickerWinWidth = 700;
-    public static final int pickerWinHeight = 600;
+    public static final int pickerWinWidth = 520;
+    public static final int pickerWinHeight = 620;
 
-    public static final int trackerWinWidth = 210;
-    public static final int trackerWinHeight = 300;
+    public static final int trackerWinWidth = 360;
+    public static final int trackerWinHeight = 620;
 
-    public static final int warehouseWinWidth = 1100;
-    public static final int warehouseWinHeight = 650;
+    public static final int warehouseWinWidth = 980;
+    public static final int warehouseWinHeight = 620;
     public static final int AlertSimWinWidth = 300;
     public static final int AlertSimWinHeight = 170;
     public static final int HistoryWinWidth = 300;

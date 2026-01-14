@@ -16,7 +16,7 @@ public class LoginClient {
         });
     }
 
-    // Reusable login popup for a specific role (or null = any role)
+
     public static void showLoginForRole(LoginModel.Role requiredRole, Runnable onSuccess) {
         try {
             LoginView view = new LoginView();

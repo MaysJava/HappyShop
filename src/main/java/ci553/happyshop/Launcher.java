@@ -1,6 +1,6 @@
 package ci553.happyshop;
 
-import ci553.happyshop.client.Main;
+import ci553.happyshop.client.home.HomeClient;
 import javafx.application.Application;
 
 /**
@@ -12,13 +12,8 @@ import javafx.application.Application;
  * @version 1.0
  */
 
-public class Launcher  {
-    /**
-     * The main method to start the full system.
-     * It launches the Main JavaFX application.
-     * @param args Command line arguments.
-     */
+public class Launcher {
     public static void main(String[] args) {
-        Application.launch(Main.class, args);  // Starts the JavaFX application through Main
+        Application.launch(HomeClient.class, args);
     }
 }
