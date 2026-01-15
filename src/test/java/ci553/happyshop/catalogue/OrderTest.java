@@ -25,4 +25,31 @@ class OrderTest {
         // Act + Assert (check behaviour)
         assertEquals(OrderState.Ordered, order.getState());
     }
+
+    @Test
+    void orderIdIsStoredCorrectly() {
+        Order order = new Order(
+                5,
+                OrderState.Ordered,
+                "2025-01-01 10:00",
+                new ArrayList<>()
+        );
+
+        assertEquals(5, order.getOrderId());
+    }
+
+    @Test
+    void productListIsStoredCorrectly() {
+        ArrayList<Product> products = new ArrayList<>();
+        products.add(new Product("001", "Test", "img.jpg", 2.5, 10));
+
+        Order order = new Order(
+                1,
+                OrderState.Ordered,
+                "2025-01-01 10:00",
+                products
+        );
+
+        assertEquals(1, order.getProductList().size());
+    }
 }
