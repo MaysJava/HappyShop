@@ -210,6 +210,18 @@ public class WarehouseView  {
         obrLvProducts.setFixedCellSize(50);
         obrLvProducts.setStyle(UIStyle.listViewStyle);
 
+        obrLvProducts.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
+            if (newP != null) {
+                try {
+                    // populate the right-hand form with the selected product
+                    controller.process("Edit");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
         VBox vbSearchResult = new VBox(5,hbLaBtns, obrLvProducts);
 
         /**
