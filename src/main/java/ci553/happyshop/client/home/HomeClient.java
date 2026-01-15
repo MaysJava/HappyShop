@@ -119,13 +119,17 @@ public class HomeClient extends Application {
         VBox root = new VBox(card);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(30));
-        root.getStyleClass().add("root");
+        root.getStyleClass().addAll("root", "home-background");
 
-        Scene scene = new Scene(root, 620, 560);
+        Scene scene = new Scene(root, 900, 700);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
 
         stage.setTitle("HappyShop");
         stage.setScene(scene);
+
+        stage.setMinWidth(900);
+        stage.setMinHeight(700);
+        stage.setResizable(true);
         stage.show();
 
     }

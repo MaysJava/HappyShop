@@ -12,10 +12,9 @@
 }
 
 .card {
-    -fx-background-color: white;
-    -fx-background-radius: 18;
-    -fx-padding: 34;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 8);
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 16;
+    -fx-padding: 24;
 }
 
 .card-tight {
@@ -30,7 +29,7 @@
 .title {
     -fx-font-size: 30px;
     -fx-font-weight: 800;
-    -fx-text-fill: #6c4df6;
+    -fx-text-fill: #E11D48;   /* red */
 }
 
 .subtitle {
@@ -89,28 +88,40 @@
 }
 
 .button-primary {
-    -fx-background-color: #6c63ff;
+    -fx-background-color: #E11D48;
     -fx-text-fill: white;
 }
 
 .button-primary:hover {
-    -fx-background-color: #5b53ff;
+    -fx-background-color: #BE123C;
 }
 
 .button-secondary {
-    -fx-background-color: #eef0ff;
-    -fx-text-fill: #2b2f55;
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #7F1D1D;
 }
 
 .button-secondary:hover {
-    -fx-background-color: #e4e6ff;
+    -fx-background-color: #FECACA;
 }
 
 .button-danger {
-    -fx-background-color: #ff4d6d;
+    -fx-background-color: #B91C1C;
     -fx-text-fill: white;
 }
 
 .button-danger:hover {
-    -fx-background-color: #ff3b60;
+    -fx-background-color: #991B1B;
 }
+
+
+
+.home-background {
+    -fx-background-image: url("../images/shopp.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: contain;
+    -fx-background-color: white;
+}
+
+

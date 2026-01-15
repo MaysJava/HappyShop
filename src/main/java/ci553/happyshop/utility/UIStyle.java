@@ -63,7 +63,7 @@ public final class UIStyle {
 
 
     public static final String labelTitleStyle ="-fx-font-weight: bold; " +
-            "-fx-font-size: 16px; -fx-text-fill: purple;";
+            "-fx-font-size: 18px; -fx-font_attach: 700; -fx-text-fill: #E11D48;";
 
     public static final String labelStyle = "-fx-font-weight: bold; " +
             "-fx-font-size: 14px; " +

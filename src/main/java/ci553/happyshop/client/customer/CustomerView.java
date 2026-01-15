@@ -140,6 +140,15 @@ public class CustomerView  {
     private VBox createSearchPage() {
         Label laPageTitle = new Label("Search Product");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
+        ImageView logo = new ImageView(new Image(
+                getClass().getResourceAsStream("/images/shopp.jpg")
+        ));
+        logo.setFitHeight(35);
+        logo.setPreserveRatio(true);
+
+        HBox header = new HBox(10, laPageTitle, logo);
+        header.setAlignment(Pos.CENTER);
+
 
         Label laId = new Label("ID:      ");
         laId.setStyle(UIStyle.labelStyle);
@@ -228,7 +237,7 @@ public class CustomerView  {
 
 
 
-        VBox vbSearchPage = new VBox(15, laPageTitle, hbId, hbName, hbBtns, hbSearchResult, laMatches, lvSearchResults);
+        VBox vbSearchPage = new VBox(15, header, hbId, hbName, hbBtns, hbSearchResult, laMatches, lvSearchResults);
         vbSearchPage.setPrefWidth(COLUMN_WIDTH);
         vbSearchPage.setAlignment(Pos.TOP_CENTER);
         vbSearchPage.setStyle("-fx-padding: 15px;");
