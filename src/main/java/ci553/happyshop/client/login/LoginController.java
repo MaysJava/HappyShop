@@ -23,6 +23,10 @@ public class LoginController {
         this.onSuccess = onSuccess;
     }
 
+
+
+
+
     public void doLogin(String username, String password) {
 
         LoginModel.Role role = model.authenticate(username, password);
@@ -32,7 +36,6 @@ public class LoginController {
             return;
         }
 
-        // If a role is required (e.g. WAREHOUSE), block wrong roles
         if (requiredRole != null && role != requiredRole) {
             view.showMessage("Access denied. This login is for " + requiredRole);
             return;

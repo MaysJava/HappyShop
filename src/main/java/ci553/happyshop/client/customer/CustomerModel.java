@@ -211,7 +211,7 @@ public class CustomerModel {
         }
 
 
-        // 👉 If we reach here, the trolley passed the new business rules.
+        // If we reach here, the trolley passed the new business rules.
         // Existing stock-check and order-creation logic stays the same:
 
         // Group the products in the trolley by productId to optimise stock checking
@@ -388,7 +388,7 @@ public class CustomerModel {
      *
      * If a rule is broken, a custom exception is thrown.
      */
-    private void validateTrolley(ArrayList<Product> trolley)
+     void validateTrolley(ArrayList<Product> trolley)
             throws UnderMinimumPaymentException, ExcessiveOrderQuantityException {
 
         double total = 0.0;
