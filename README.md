@@ -1,21 +1,32 @@
 # HappyShop
 
-A JavaFX project developed in IntelliJ using Maven and JDK 21 (the latest LTS version at development in 2025), designed for CI553 coursework.
+This project is an extended version of the HappyShop system developed for the
+CI553 Object-Oriented Development & Testing module at the University of Brighton.
 
-## ➡️ Setup
+## Overview
+HappyShop is a JavaFX-based multi-client application following the MVC pattern.
+It includes multiple independent clients such as Customer, Warehouse, Order Tracker,
+and Manager, all sharing a common backend model.
 
-After opening the project in IntelliJ:
+Key features include:
+- Role-based login and client launching
+- Customer trolley management and checkout
+- Order tracking using observer-based updates
+- Warehouse inventory management
+- External payment integration using the Adapter pattern
 
-- Go to the `systemSetup` package.
-- Run `SetOrderFileSystem` and `SetDatabase` **once only** to set up initial files and database.
+## Technologies Used
+- Java
+- JavaFX
+- Maven
+- JUnit
+- Apache Derby
+- Git & GitHub
 
-## 🚀 Running the System
+## How to Run
+Open the project in IntelliJ IDEA and run the main launcher class.
+Ensure JavaFX is correctly configured.
 
-- Run `Launcher` each time you want to start the system.
-
-## 📌 Summary
-
-✅ JavaFX project  
-✅ Developed in IntelliJ with Maven  
-✅ Designed for CI553 coursework  
-✅ Easy setup and clean structure
+## Repository
+This repository contains the full source code and development history
+for the HappyShop coursework submission.
